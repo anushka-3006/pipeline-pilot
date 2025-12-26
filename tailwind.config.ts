@@ -14,7 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["IBM Plex Sans", "system-ui", "sans-serif"],
+        sans: ["Outfit", "system-ui", "sans-serif"],
+        display: ["Space Grotesk", "system-ui", "sans-serif"],
         mono: ["JetBrains Mono", "monospace"],
       },
       colors: {
@@ -69,6 +70,7 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        lavender: "hsl(var(--lavender))",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -113,6 +115,10 @@ export default {
           from: { opacity: "0" },
           to: { opacity: "1" },
         },
+        "shimmer": {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -120,6 +126,10 @@ export default {
         "pulse-glow": "pulse-glow 2s ease-in-out infinite",
         "slide-in-bottom": "slide-in-bottom 0.3s ease-out",
         "fade-in": "fade-in 0.3s ease-out",
+        "shimmer": "shimmer 2s linear infinite",
+      },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
       },
     },
   },
