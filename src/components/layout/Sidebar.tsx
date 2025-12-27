@@ -4,6 +4,7 @@ import {
   Users,
   Send,
   Inbox,
+  Phone,
   Shield,
   Settings,
   Bell,
@@ -19,6 +20,7 @@ const navigation = [
   { name: "Leads & Pipeline", href: "/pipeline", icon: Users },
   { name: "Campaigns", href: "/campaigns", icon: Send },
   { name: "Inbox", href: "/inbox", icon: Inbox },
+  { name: "Calls", href: "/calls", icon: Phone },
   { name: "Email Health", href: "/health", icon: Shield },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
