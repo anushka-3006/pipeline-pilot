@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { 
   Phone, PhoneIncoming, PhoneOutgoing, Search, Filter, SlidersHorizontal,
-  Calendar, Clock, Settings, ChevronLeft, ChevronRight, Plus, FileText, Activity
+  Calendar, Clock, ChevronLeft, ChevronRight, Plus, FileText, Activity, Settings
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { CallCard, type Call } from "@/components/calls/CallCard";
 import { CallDetail } from "@/components/calls/CallDetail";
 import { CallPolicySettings } from "@/components/calls/CallPolicySettings";
@@ -94,21 +95,28 @@ const mockCalls: Call[] = [
   },
 ];
 
+const filters = [
+  { id: "all", label: "All Calls", icon: Phone },
+  { id: "inbound", label: "Inbound", icon: PhoneIncoming },
+  { id: "outbound", label: "Outbound", icon: PhoneOutgoing },
+  { id: "scheduled", label: "Scheduled", icon: Clock },
+];
+
 export default function Calls() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCall, setSelectedCall] = useState<Call | null>(mockCalls[0]);
+  const [selectedCall, setSelectedCall] = useState<Call | null>(null);
   const [isPanelCollapsed, setIsPanelCollapsed] = useState(false);
-  const [activeTab, setActiveTab] = useState("all");
+  const [activeFilter, setActiveFilter] = useState("all");
 
   const filteredCalls = mockCalls.filter((call) => {
     const matchesSearch = 
       call.leadName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       call.leadCompany.toLowerCase().includes(searchQuery.toLowerCase());
     
-    if (activeTab === "all") return matchesSearch;
-    if (activeTab === "inbound") return matchesSearch && call.type === "inbound";
-    if (activeTab === "outbound") return matchesSearch && call.type === "outbound";
-    if (activeTab === "scheduled") return matchesSearch && call.status === "scheduled";
+    if (activeFilter === "all") return matchesSearch;
+    if (activeFilter === "inbound") return matchesSearch && call.type === "inbound";
+    if (activeFilter === "outbound") return matchesSearch && call.type === "outbound";
+    if (activeFilter === "scheduled") return matchesSearch && call.status === "scheduled";
     return matchesSearch;
   });
 
@@ -118,91 +126,6 @@ export default function Calls() {
     scheduled: mockCalls.filter(c => c.status === "scheduled").length,
     missed: mockCalls.filter(c => c.status === "missed").length,
   };
-
-  const renderCallListView = () => (
-    <div className="flex-1 flex overflow-hidden">
-      {/* Calls List */}
-      <div 
-        className={cn(
-          "border-r border-border flex flex-col bg-card/30 transition-all duration-300 ease-in-out relative",
-          isPanelCollapsed ? "w-0 min-w-0 overflow-hidden border-r-0" : "w-96 min-w-[384px]"
-        )}
-      >
-        {/* Search */}
-        <div className="p-4 border-b border-border">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              placeholder="Search calls..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 bg-background/50"
-            />
-          </div>
-          <div className="flex items-center gap-2 mt-3">
-            <Button variant="outline" size="sm" className="flex-1">
-              <Filter className="w-4 h-4 mr-2" />
-              Filter
-            </Button>
-            <Button variant="outline" size="sm" className="flex-1">
-              <SlidersHorizontal className="w-4 h-4 mr-2" />
-              Sort
-            </Button>
-          </div>
-        </div>
-
-        {/* Call List */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-3">
-          {filteredCalls.map((call) => (
-            <CallCard
-              key={call.id}
-              call={call}
-              isSelected={selectedCall?.id === call.id}
-              onClick={() => setSelectedCall(call)}
-            />
-          ))}
-          {filteredCalls.length === 0 && (
-            <div className="text-center py-12 text-muted-foreground">
-              <Phone className="w-12 h-12 mx-auto mb-4 opacity-50" />
-              <p>No calls found</p>
-            </div>
-          )}
-        </div>
-
-        {/* Toggle Button */}
-        <button 
-          onClick={() => setIsPanelCollapsed(!isPanelCollapsed)}
-          className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-card border border-border flex items-center justify-center hover:bg-muted transition-colors shadow-lg z-10"
-        >
-          <ChevronLeft className="w-3.5 h-3.5 text-foreground" />
-        </button>
-      </div>
-
-      {/* Toggle Button when collapsed */}
-      {isPanelCollapsed && (
-        <button 
-          onClick={() => setIsPanelCollapsed(false)}
-          className="absolute left-0 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-card border border-border flex items-center justify-center hover:bg-muted transition-colors shadow-lg z-10"
-        >
-          <ChevronRight className="w-3.5 h-3.5 text-foreground" />
-        </button>
-      )}
-
-      {/* Call Detail */}
-      <div className="flex-1 bg-background/50 overflow-y-auto">
-        {selectedCall ? (
-          <CallDetail call={selectedCall} />
-        ) : (
-          <div className="h-full flex items-center justify-center text-muted-foreground">
-            <div className="text-center">
-              <Phone className="w-16 h-16 mx-auto mb-4 opacity-30" />
-              <p>Select a call to view details</p>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
 
   return (
     <div className="h-[calc(100vh-2rem)] flex flex-col animate-fade-in">
@@ -216,6 +139,45 @@ export default function Calls() {
             </p>
           </div>
           <div className="flex items-center gap-2">
+            {/* Scripts Dialog */}
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <FileText className="w-4 h-4 mr-2" />
+                  Scripts
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
+                <CallScriptEditor />
+              </DialogContent>
+            </Dialog>
+
+            {/* Infrastructure Sheet */}
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Activity className="w-4 h-4 mr-2" />
+                  Infrastructure
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[600px] sm:max-w-[600px] overflow-y-auto">
+                <VoiceInfraHealth />
+              </SheetContent>
+            </Sheet>
+
+            {/* Policies Sheet */}
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Settings className="w-4 h-4 mr-2" />
+                  Policies
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[600px] sm:max-w-[600px] overflow-y-auto">
+                <CallPolicySettings />
+              </SheetContent>
+            </Sheet>
+
             <Button variant="outline" size="sm">
               <Calendar className="w-4 h-4 mr-2" />
               Schedule Call
@@ -260,66 +222,114 @@ export default function Calls() {
         </div>
       </div>
 
-      {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
-        <div className="px-6 py-3 border-b border-border flex-shrink-0">
-          <TabsList className="bg-muted/50">
-            <TabsTrigger value="all">All Calls</TabsTrigger>
-            <TabsTrigger value="inbound">
-              <PhoneIncoming className="w-4 h-4 mr-1" />
-              Inbound
-            </TabsTrigger>
-            <TabsTrigger value="outbound">
-              <PhoneOutgoing className="w-4 h-4 mr-1" />
-              Outbound
-            </TabsTrigger>
-            <TabsTrigger value="scheduled">
-              <Clock className="w-4 h-4 mr-1" />
-              Scheduled
-            </TabsTrigger>
-            <TabsTrigger value="scripts">
-              <FileText className="w-4 h-4 mr-1" />
-              Scripts
-            </TabsTrigger>
-            <TabsTrigger value="infrastructure">
-              <Activity className="w-4 h-4 mr-1" />
-              Infrastructure
-            </TabsTrigger>
-            <TabsTrigger value="policies">
-              <Settings className="w-4 h-4 mr-1" />
-              Policies
-            </TabsTrigger>
-          </TabsList>
+      {/* Main Content - Two Panel Layout */}
+      <div className="flex-1 flex overflow-hidden relative">
+        {/* Calls List Panel */}
+        <div 
+          className={cn(
+            "border-r border-border flex flex-col bg-card/30 transition-all duration-300 ease-in-out relative",
+            isPanelCollapsed ? "w-0 min-w-0 overflow-hidden border-r-0" : "w-96 min-w-[384px]"
+          )}
+        >
+          {/* Filters */}
+          <div className="p-3 border-b border-border flex gap-1 overflow-x-auto scrollbar-thin">
+            {filters.map((filter) => (
+              <button
+                key={filter.id}
+                onClick={() => setActiveFilter(filter.id)}
+                className={cn(
+                  "px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors flex items-center gap-2",
+                  activeFilter === filter.id
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                )}
+              >
+                <filter.icon className="w-3.5 h-3.5" />
+                {filter.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Search */}
+          <div className="p-4 border-b border-border">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                placeholder="Search calls..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9 bg-background/50"
+              />
+            </div>
+            <div className="flex items-center gap-2 mt-3">
+              <Button variant="outline" size="sm" className="flex-1">
+                <Filter className="w-4 h-4 mr-2" />
+                Filter
+              </Button>
+              <Button variant="outline" size="sm" className="flex-1">
+                <SlidersHorizontal className="w-4 h-4 mr-2" />
+                Sort
+              </Button>
+            </div>
+          </div>
+
+          {/* Call List */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            {filteredCalls.map((call, index) => (
+              <div
+                key={call.id}
+                className="animate-slide-in-bottom"
+                style={{ animationDelay: `${index * 30}ms` }}
+              >
+                <CallCard
+                  call={call}
+                  isSelected={selectedCall?.id === call.id}
+                  onClick={() => setSelectedCall(call)}
+                />
+              </div>
+            ))}
+            {filteredCalls.length === 0 && (
+              <div className="text-center py-12 text-muted-foreground">
+                <Phone className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                <p>No calls found</p>
+              </div>
+            )}
+          </div>
+
+          {/* Toggle Button */}
+          <button 
+            onClick={() => setIsPanelCollapsed(!isPanelCollapsed)}
+            className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-card border border-border flex items-center justify-center hover:bg-muted transition-colors shadow-lg z-10"
+          >
+            <ChevronLeft className="w-3.5 h-3.5 text-foreground" />
+          </button>
         </div>
 
-        <TabsContent value="all" className="flex-1 flex overflow-hidden m-0 data-[state=inactive]:hidden">
-          {renderCallListView()}
-        </TabsContent>
+        {/* Toggle Button when collapsed */}
+        {isPanelCollapsed && (
+          <button 
+            onClick={() => setIsPanelCollapsed(false)}
+            className="absolute left-0 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-card border border-border flex items-center justify-center hover:bg-muted transition-colors shadow-lg z-10"
+          >
+            <ChevronRight className="w-3.5 h-3.5 text-foreground" />
+          </button>
+        )}
 
-        <TabsContent value="inbound" className="flex-1 flex overflow-hidden m-0 data-[state=inactive]:hidden">
-          {renderCallListView()}
-        </TabsContent>
-
-        <TabsContent value="outbound" className="flex-1 flex overflow-hidden m-0 data-[state=inactive]:hidden">
-          {renderCallListView()}
-        </TabsContent>
-
-        <TabsContent value="scheduled" className="flex-1 flex overflow-hidden m-0 data-[state=inactive]:hidden">
-          {renderCallListView()}
-        </TabsContent>
-
-        <TabsContent value="scripts" className="flex-1 overflow-y-auto p-6 m-0 data-[state=inactive]:hidden">
-          <CallScriptEditor />
-        </TabsContent>
-
-        <TabsContent value="infrastructure" className="flex-1 overflow-y-auto p-6 m-0 data-[state=inactive]:hidden">
-          <VoiceInfraHealth />
-        </TabsContent>
-
-        <TabsContent value="policies" className="flex-1 overflow-y-auto p-6 m-0 data-[state=inactive]:hidden">
-          <CallPolicySettings />
-        </TabsContent>
-      </Tabs>
+        {/* Call Detail Panel */}
+        <div className="flex-1 bg-background/50 overflow-y-auto">
+          {selectedCall ? (
+            <CallDetail call={selectedCall} />
+          ) : (
+            <div className="h-full flex items-center justify-center text-muted-foreground">
+              <div className="text-center">
+                <Phone className="w-16 h-16 mx-auto mb-4 opacity-30" />
+                <h3 className="text-lg font-medium text-foreground mb-2">No call selected</h3>
+                <p className="text-sm">Select a call from the list to view details</p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
