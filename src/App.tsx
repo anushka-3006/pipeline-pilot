@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Pipeline from "./pages/Pipeline";
 import Campaigns from "./pages/Campaigns";
 import Inbox from "./pages/Inbox";
+import Calls from "./pages/Calls";
 import EmailHealth from "./pages/EmailHealth";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/pipeline" element={<Pipeline />} />
             <Route path="/campaigns" element={<Campaigns />} />
             <Route path="/inbox" element={<Inbox />} />
+            <Route path="/calls" element={<Calls />} />
             <Route path="/health" element={<EmailHealth />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<NotFound />} />
