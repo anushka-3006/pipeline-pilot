@@ -94,9 +94,9 @@ export default function Inbox() {
   });
 
   return (
-    <div className="h-screen flex animate-fade-in">
+    <div className="h-[calc(100vh-2rem)] flex animate-fade-in overflow-hidden">
       {/* Conversations List */}
-      <div className="w-96 border-r border-border flex flex-col">
+      <div className="w-80 min-w-[320px] border-r border-border flex flex-col bg-card/30">
         {/* Header */}
         <div className="p-4 border-b border-border">
           <h1 className="text-xl font-bold text-foreground mb-4">Inbox</h1>
