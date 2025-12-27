@@ -39,6 +39,11 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 py-5 border-b border-white/10">
         <img src={logo} alt="Logo" className="w-10 h-10 object-contain flex-shrink-0" />
+        {!collapsed && (
+          <span className="text-xl font-semibold tracking-tight text-foreground font-brand">
+            Autonyze
+          </span>
+        )}
       </div>
 
       {/* Navigation */}
