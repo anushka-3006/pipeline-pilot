@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { 
   Phone, PhoneIncoming, PhoneOutgoing, Search, Filter, SlidersHorizontal,
-  Calendar, Clock, ChevronLeft, ChevronRight, Plus, FileText, Activity, Settings
+  Calendar, Clock, Plus, FileText, Activity, Settings, X
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -126,10 +126,35 @@ export default function Calls() {
     missed: mockCalls.filter(c => c.status === "missed").length,
   };
 
+  // If a call is selected, show the detail view
+  if (selectedCall) {
+    return (
+      <div className="min-h-screen overflow-y-auto animate-fade-in">
+        {/* Header with back button */}
+        <div className="p-6 border-b border-border sticky top-0 bg-background/95 backdrop-blur-sm z-10">
+          <div className="flex items-center gap-4">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => setSelectedCall(null)}
+            >
+              <X className="w-5 h-5" />
+            </Button>
+            <div>
+              <h1 className="text-xl font-bold text-foreground">Call Details</h1>
+              <p className="text-sm text-muted-foreground">{selectedCall.leadName} - {selectedCall.leadCompany}</p>
+            </div>
+          </div>
+        </div>
+        <CallDetail call={selectedCall} />
+      </div>
+    );
+  }
+
   return (
-    <div className="h-[calc(100vh-2rem)] flex flex-col animate-fade-in">
+    <div className="min-h-screen overflow-y-auto animate-fade-in">
       {/* Header */}
-      <div className="p-6 border-b border-border flex-shrink-0">
+      <div className="p-6 border-b border-border">
         <div className="flex items-center justify-between mb-4">
           <div>
             <h1 className="text-2xl font-bold text-foreground tracking-tight">Calls</h1>
@@ -137,7 +162,7 @@ export default function Calls() {
               Manage inbound booking and outbound reminder calls
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             {/* Scripts Dialog */}
             <Dialog>
               <DialogTrigger asChild>
@@ -189,7 +214,7 @@ export default function Calls() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="p-4 rounded-lg bg-card/50 border border-border">
             <div className="flex items-center gap-2 text-muted-foreground mb-1">
               <Phone className="w-4 h-4" />
@@ -221,98 +246,72 @@ export default function Calls() {
         </div>
       </div>
 
-      {/* Main Content - Two Panel Layout */}
-      <div className="flex-1 flex overflow-hidden relative">
-        {/* Calls List Panel */}
-        <div 
-          className={cn(
-            "flex flex-col bg-card/30 transition-all duration-300 ease-in-out relative",
-            selectedCall ? "w-96 min-w-[384px] border-r border-border" : "flex-1"
-          )}
-        >
+      {/* Filters & Search */}
+      <div className="p-6 border-b border-border">
+        <div className="flex flex-col md:flex-row md:items-center gap-4">
           {/* Filters */}
-          <div className="p-3 border-b border-border flex gap-1 overflow-x-auto scrollbar-thin">
+          <div className="flex gap-2 overflow-x-auto">
             {filters.map((filter) => (
               <button
                 key={filter.id}
                 onClick={() => setActiveFilter(filter.id)}
                 className={cn(
-                  "px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors flex items-center gap-2",
+                  "px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors flex items-center gap-2",
                   activeFilter === filter.id
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80"
                 )}
               >
-                <filter.icon className="w-3.5 h-3.5" />
+                <filter.icon className="w-4 h-4" />
                 {filter.label}
               </button>
             ))}
           </div>
 
-          {/* Search */}
-          <div className="p-4 border-b border-border">
-            <div className="relative">
+          {/* Search & Actions */}
+          <div className="flex flex-1 items-center gap-2">
+            <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 placeholder="Search calls..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 bg-background/50"
+                className="pl-9"
               />
             </div>
-            <div className="flex items-center gap-2 mt-3">
-              <Button variant="outline" size="sm" className="flex-1">
-                <Filter className="w-4 h-4 mr-2" />
-                Filter
-              </Button>
-              <Button variant="outline" size="sm" className="flex-1">
-                <SlidersHorizontal className="w-4 h-4 mr-2" />
-                Sort
-              </Button>
-            </div>
-          </div>
-
-          {/* Call List */}
-          <div className="flex-1 overflow-y-auto p-4">
-            <div className={cn(
-              "gap-3",
-              selectedCall ? "flex flex-col" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-            )}>
-              {filteredCalls.map((call, index) => (
-                <div
-                  key={call.id}
-                  className="animate-slide-in-bottom"
-                  style={{ animationDelay: `${index * 30}ms` }}
-                >
-                  <CallCard
-                    call={call}
-                    isSelected={selectedCall?.id === call.id}
-                    onClick={() => setSelectedCall(call)}
-                  />
-                </div>
-              ))}
-            </div>
-            {filteredCalls.length === 0 && (
-              <div className="text-center py-12 text-muted-foreground">
-                <Phone className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p>No calls found</p>
-              </div>
-            )}
+            <Button variant="outline" size="sm">
+              <Filter className="w-4 h-4 mr-2" />
+              Filter
+            </Button>
+            <Button variant="outline" size="sm">
+              <SlidersHorizontal className="w-4 h-4 mr-2" />
+              Sort
+            </Button>
           </div>
         </div>
+      </div>
 
-        {/* Call Detail Panel - Only shows when a call is selected */}
-        {selectedCall && (
-          <div className="flex-1 bg-background/50 overflow-y-auto relative animate-fade-in">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute top-4 right-4 z-10"
-              onClick={() => setSelectedCall(null)}
+      {/* Call Grid */}
+      <div className="p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {filteredCalls.map((call, index) => (
+            <div
+              key={call.id}
+              className="animate-slide-in-bottom"
+              style={{ animationDelay: `${index * 30}ms` }}
             >
-              <ChevronLeft className="w-4 h-4" />
-            </Button>
-            <CallDetail call={selectedCall} />
+              <CallCard
+                call={call}
+                isSelected={false}
+                onClick={() => setSelectedCall(call)}
+              />
+            </div>
+          ))}
+        </div>
+        {filteredCalls.length === 0 && (
+          <div className="text-center py-12 text-muted-foreground">
+            <Phone className="w-12 h-12 mx-auto mb-4 opacity-50" />
+            <p>No calls found</p>
           </div>
         )}
       </div>
