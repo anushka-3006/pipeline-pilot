@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { Search, Filter, Mail, Phone, Clock, Star } from "lucide-react";
+import { Search, PanelLeftClose, PanelLeft } from "lucide-react";
 import { ConversationItem } from "@/components/inbox/ConversationItem";
 import { ConversationDetail } from "@/components/inbox/ConversationDetail";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const mockConversations = [
   {
@@ -83,6 +85,7 @@ export default function Inbox() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("all");
   const [selectedConversation, setSelectedConversation] = useState(mockConversations[0].id);
+  const [isPanelCollapsed, setIsPanelCollapsed] = useState(false);
 
   const filteredConversations = mockConversations.filter(conv => {
     if (activeFilter === "unread" && !conv.isUnread) return false;
@@ -96,7 +99,12 @@ export default function Inbox() {
   return (
     <div className="h-[calc(100vh-2rem)] flex animate-fade-in overflow-hidden">
       {/* Conversations List */}
-      <div className="w-80 min-w-[320px] border-r border-border flex flex-col bg-card/30">
+      <div 
+        className={cn(
+          "border-r border-border flex flex-col bg-card/30 transition-all duration-300 ease-in-out",
+          isPanelCollapsed ? "w-0 min-w-0 overflow-hidden" : "w-80 min-w-[320px]"
+        )}
+      >
         {/* Header */}
         <div className="p-4 border-b border-border">
           <h1 className="text-xl font-bold text-foreground mb-4">Inbox</h1>
@@ -156,8 +164,29 @@ export default function Inbox() {
         </div>
       </div>
 
-      {/* Conversation Detail */}
-      <div className="flex-1">
+      {/* Toggle Button & Conversation Detail */}
+      <div className="flex-1 flex flex-col relative">
+        {/* Toggle Button */}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsPanelCollapsed(!isPanelCollapsed)}
+              className="absolute top-3 left-3 z-10 h-8 w-8 bg-background/80 backdrop-blur-sm hover:bg-muted"
+            >
+              {isPanelCollapsed ? (
+                <PanelLeft className="h-4 w-4" />
+              ) : (
+                <PanelLeftClose className="h-4 w-4" />
+              )}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="right">
+            {isPanelCollapsed ? "Show conversations" : "Hide conversations"}
+          </TooltipContent>
+        </Tooltip>
+
         <ConversationDetail />
       </div>
     </div>
