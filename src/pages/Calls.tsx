@@ -292,23 +292,33 @@ export default function Calls() {
           </TabsList>
         </div>
 
-        <TabsContent value="policies" className="flex-1 overflow-y-auto p-6 m-0">
-          <CallPolicySettings />
+        <TabsContent value="all" className="flex-1 flex overflow-hidden m-0 data-[state=inactive]:hidden">
+          {renderCallListView()}
         </TabsContent>
 
-        <TabsContent value="scripts" className="flex-1 overflow-y-auto p-6 m-0">
+        <TabsContent value="inbound" className="flex-1 flex overflow-hidden m-0 data-[state=inactive]:hidden">
+          {renderCallListView()}
+        </TabsContent>
+
+        <TabsContent value="outbound" className="flex-1 flex overflow-hidden m-0 data-[state=inactive]:hidden">
+          {renderCallListView()}
+        </TabsContent>
+
+        <TabsContent value="scheduled" className="flex-1 flex overflow-hidden m-0 data-[state=inactive]:hidden">
+          {renderCallListView()}
+        </TabsContent>
+
+        <TabsContent value="scripts" className="flex-1 overflow-y-auto p-6 m-0 data-[state=inactive]:hidden">
           <CallScriptEditor />
         </TabsContent>
 
-        <TabsContent value="infrastructure" className="flex-1 overflow-y-auto p-6 m-0">
+        <TabsContent value="infrastructure" className="flex-1 overflow-y-auto p-6 m-0 data-[state=inactive]:hidden">
           <VoiceInfraHealth />
         </TabsContent>
 
-        {["all", "inbound", "outbound", "scheduled"].map((tab) => (
-          <TabsContent key={tab} value={tab} className="flex-1 flex overflow-hidden m-0 relative">
-            {renderCallListView()}
-          </TabsContent>
-        ))}
+        <TabsContent value="policies" className="flex-1 overflow-y-auto p-6 m-0 data-[state=inactive]:hidden">
+          <CallPolicySettings />
+        </TabsContent>
       </Tabs>
     </div>
   );
