@@ -82,7 +82,7 @@ export function ConversationDetail() {
       {/* Main Thread */}
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <div className="p-4 pl-14 border-b border-border">
+        <div className="p-4 border-b border-border">
           <div className="flex items-center justify-between">
             <button 
               onClick={() => setShowLeadDetails(true)}

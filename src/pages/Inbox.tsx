@@ -1,10 +1,8 @@
 import { useState } from "react";
-import { Search, PanelLeftClose, PanelLeft } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { ConversationItem } from "@/components/inbox/ConversationItem";
 import { ConversationDetail } from "@/components/inbox/ConversationDetail";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const mockConversations = [
   {
@@ -164,29 +162,23 @@ export default function Inbox() {
         </div>
       </div>
 
-      {/* Toggle Button & Conversation Detail */}
-      <div className="flex-1 flex flex-col relative">
-        {/* Toggle Button */}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsPanelCollapsed(!isPanelCollapsed)}
-              className="absolute top-3 left-3 z-10 h-8 w-8 bg-background/80 backdrop-blur-sm hover:bg-muted"
-            >
-              {isPanelCollapsed ? (
-                <PanelLeft className="h-4 w-4" />
-              ) : (
-                <PanelLeftClose className="h-4 w-4" />
-              )}
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="right">
-            {isPanelCollapsed ? "Show conversations" : "Hide conversations"}
-          </TooltipContent>
-        </Tooltip>
+      {/* Toggle Button - positioned on the edge like sidebar */}
+      <button 
+        onClick={() => setIsPanelCollapsed(!isPanelCollapsed)}
+        className={cn(
+          "absolute top-20 w-6 h-6 rounded-full bg-card border border-border flex items-center justify-center hover:bg-muted transition-all duration-300 shadow-lg z-10",
+          isPanelCollapsed ? "left-0" : "left-[308px]"
+        )}
+      >
+        {isPanelCollapsed ? (
+          <ChevronRight className="w-3.5 h-3.5 text-foreground" />
+        ) : (
+          <ChevronLeft className="w-3.5 h-3.5 text-foreground" />
+        )}
+      </button>
 
+      {/* Conversation Detail */}
+      <div className="flex-1">
         <ConversationDetail />
       </div>
     </div>
