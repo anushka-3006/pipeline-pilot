@@ -1,8 +1,10 @@
-import { Users, Mail, Calendar, TrendingUp, Send, Clock } from "lucide-react";
+import { Users, Mail, Calendar, TrendingUp, Send, Clock, Phone } from "lucide-react";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
 import { CampaignPerformance } from "@/components/dashboard/CampaignPerformance";
 import { PipelineOverview } from "@/components/dashboard/PipelineOverview";
+import { CallAnalytics } from "@/components/dashboard/CallAnalytics";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function Dashboard() {
   return (
@@ -45,58 +47,75 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          <CampaignPerformance />
-          <ActivityFeed />
-        </div>
-        <div className="space-y-6">
-          <PipelineOverview />
-          
-          {/* Quick Actions */}
-          <div className="bg-card rounded-xl border border-border p-6">
-            <h3 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h3>
-            <div className="space-y-3">
-              <button className="w-full btn-primary justify-start">
-                <Users className="w-4 h-4" />
-                Import Leads
-              </button>
-              <button className="w-full btn-secondary justify-start">
-                <Send className="w-4 h-4" />
-                Create Campaign
-              </button>
-              <button className="w-full btn-ghost justify-start border border-border">
-                <Clock className="w-4 h-4" />
-                Schedule Follow-ups
-              </button>
-            </div>
-          </div>
+      {/* Tabs for different analytics views */}
+      <Tabs defaultValue="overview" className="w-full">
+        <TabsList className="bg-card border border-border">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="calls" className="flex items-center gap-2">
+            <Phone className="w-4 h-4" />
+            Call Analytics
+          </TabsTrigger>
+        </TabsList>
 
-          {/* Health Status */}
-          <div className="bg-card rounded-xl border border-border p-6">
-            <h3 className="text-lg font-semibold text-foreground mb-4">Email Health</h3>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Domain reputation</span>
-                <span className="text-sm font-medium text-success">Excellent</span>
+        <TabsContent value="overview" className="mt-6">
+          {/* Main Content Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-6">
+              <CampaignPerformance />
+              <ActivityFeed />
+            </div>
+            <div className="space-y-6">
+              <PipelineOverview />
+              
+              {/* Quick Actions */}
+              <div className="bg-card rounded-xl border border-border p-6">
+                <h3 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h3>
+                <div className="space-y-3">
+                  <button className="w-full btn-primary justify-start">
+                    <Users className="w-4 h-4" />
+                    Import Leads
+                  </button>
+                  <button className="w-full btn-secondary justify-start">
+                    <Send className="w-4 h-4" />
+                    Create Campaign
+                  </button>
+                  <button className="w-full btn-ghost justify-start border border-border">
+                    <Clock className="w-4 h-4" />
+                    Schedule Follow-ups
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Warm-up status</span>
-                <span className="text-sm font-medium text-primary">Active</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">SPF/DKIM</span>
-                <span className="text-sm font-medium text-success">Configured</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Daily limit</span>
-                <span className="text-sm font-medium text-foreground">145 / 200</span>
+
+              {/* Health Status */}
+              <div className="bg-card rounded-xl border border-border p-6">
+                <h3 className="text-lg font-semibold text-foreground mb-4">Email Health</h3>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Domain reputation</span>
+                    <span className="text-sm font-medium text-success">Excellent</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Warm-up status</span>
+                    <span className="text-sm font-medium text-primary">Active</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">SPF/DKIM</span>
+                    <span className="text-sm font-medium text-success">Configured</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Daily limit</span>
+                    <span className="text-sm font-medium text-foreground">145 / 200</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
+        </TabsContent>
+
+        <TabsContent value="calls" className="mt-6">
+          <CallAnalytics />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
