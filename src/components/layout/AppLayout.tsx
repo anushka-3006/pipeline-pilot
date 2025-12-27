@@ -1,12 +1,15 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { Sidebar } from "./Sidebar";
 import background from "@/assets/background.jpg";
+import { cn } from "@/lib/utils";
 
 interface AppLayoutProps {
   children: ReactNode;
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
   return (
     <div className="min-h-screen dark relative">
       {/* Background Image */}
@@ -29,8 +32,14 @@ export function AppLayout({ children }: AppLayoutProps) {
       
       {/* Content */}
       <div className="relative z-10">
-        <Sidebar />
-        <main className="pl-64">
+        <Sidebar 
+          collapsed={sidebarCollapsed} 
+          onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
+        />
+        <main className={cn(
+          "transition-all duration-300",
+          sidebarCollapsed ? "pl-16" : "pl-64"
+        )}>
           <div className="min-h-screen">
             {children}
           </div>

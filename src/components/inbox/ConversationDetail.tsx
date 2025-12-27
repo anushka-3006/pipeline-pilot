@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Mail, Phone, Calendar, Building2, ExternalLink, Sparkles, Send, Clock, ChevronDown } from "lucide-react";
+import { Mail, Phone, Calendar, Building2, ExternalLink, Sparkles, Send, Clock, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Message {
@@ -70,6 +70,7 @@ const aiSuggestions = [
 export function ConversationDetail() {
   const [selectedSuggestion, setSelectedSuggestion] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState("");
+  const [showLeadDetails, setShowLeadDetails] = useState(false);
 
   const handleSuggestionClick = (suggestion: typeof aiSuggestions[0]) => {
     setSelectedSuggestion(suggestion.id);
@@ -83,10 +84,13 @@ export function ConversationDetail() {
         {/* Header */}
         <div className="p-4 border-b border-border">
           <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-semibold text-foreground">{mockConversation.leadName}</h2>
+            <button 
+              onClick={() => setShowLeadDetails(true)}
+              className="text-left hover:opacity-80 transition-opacity"
+            >
+              <h2 className="text-lg font-semibold text-foreground hover:text-primary transition-colors">{mockConversation.leadName}</h2>
               <p className="text-sm text-muted-foreground">{mockConversation.role} at {mockConversation.company}</p>
-            </div>
+            </button>
             <div className="flex items-center gap-2">
               <button className="btn-secondary">
                 <Calendar className="w-4 h-4" />
@@ -132,21 +136,21 @@ export function ConversationDetail() {
         </div>
 
         {/* AI Suggestions */}
-        <div className="p-4 border-t border-border bg-muted/30">
-          <div className="flex items-center gap-2 mb-3">
+        <div className="px-4 py-3 border-t border-border/50">
+          <div className="flex items-center gap-2 mb-2">
             <Sparkles className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium text-foreground">AI Suggested Replies</span>
+            <span className="text-xs font-medium text-muted-foreground">AI Suggested Replies</span>
           </div>
-          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin">
+          <div className="flex gap-2 overflow-x-auto scrollbar-thin">
             {aiSuggestions.map((suggestion) => (
               <button
                 key={suggestion.id}
                 onClick={() => handleSuggestionClick(suggestion)}
                 className={cn(
-                  "px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors",
+                  "px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors",
                   selectedSuggestion === suggestion.id
                     ? "bg-primary text-primary-foreground"
-                    : "bg-card border border-border text-foreground hover:bg-muted"
+                    : "bg-muted/50 border border-border/50 text-muted-foreground hover:text-foreground hover:bg-muted"
                 )}
               >
                 {suggestion.label}
@@ -155,95 +159,114 @@ export function ConversationDetail() {
           </div>
         </div>
 
-        {/* Composer */}
-        <div className="p-4 border-t border-border">
-          <textarea
-            value={replyContent}
-            onChange={(e) => setReplyContent(e.target.value)}
-            placeholder="Type your reply..."
-            className="w-full h-32 p-3 rounded-lg bg-muted border border-border text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-2 focus:ring-primary/50"
-          />
-          <div className="flex items-center justify-between mt-3">
-            <div className="flex items-center gap-2">
-              <button className="btn-ghost text-sm">
+        {/* Composer - Simplified with inline send button */}
+        <div className="p-4 border-t border-border/50">
+          <div className="flex gap-3">
+            <div className="flex-1 relative">
+              <textarea
+                value={replyContent}
+                onChange={(e) => setReplyContent(e.target.value)}
+                placeholder="Type your reply..."
+                className="w-full h-12 py-3 px-4 rounded-lg bg-muted/30 border border-border/50 text-foreground text-sm placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/50"
+                rows={1}
+                onInput={(e) => {
+                  const target = e.target as HTMLTextAreaElement;
+                  target.style.height = '48px';
+                  target.style.height = Math.min(target.scrollHeight, 120) + 'px';
+                }}
+              />
+            </div>
+            <div className="flex items-end gap-2">
+              <button className="h-12 px-3 text-muted-foreground hover:text-foreground transition-colors">
                 <Clock className="w-4 h-4" />
-                Schedule
+              </button>
+              <button 
+                className="h-12 px-4 btn-primary rounded-lg"
+                disabled={!replyContent.trim()}
+              >
+                <Send className="w-4 h-4" />
               </button>
             </div>
-            <button className="btn-primary" disabled={!replyContent.trim()}>
-              <Send className="w-4 h-4" />
-              Send Reply
+          </div>
+        </div>
+      </div>
+
+      {/* Lead Details Sidebar - Only shown when clicking on name */}
+      {showLeadDetails && (
+        <div className="w-80 border-l border-border p-4 overflow-y-auto scrollbar-thin animate-slide-in-right">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-semibold text-foreground">Lead Details</h3>
+            <button 
+              onClick={() => setShowLeadDetails(false)}
+              className="p-1 rounded hover:bg-muted transition-colors"
+            >
+              <X className="w-4 h-4 text-muted-foreground" />
             </button>
           </div>
-        </div>
-      </div>
-
-      {/* Lead Sidebar */}
-      <div className="w-80 border-l border-border p-4 overflow-y-auto scrollbar-thin">
-        <h3 className="text-sm font-semibold text-foreground mb-4">Lead Details</h3>
-        
-        <div className="space-y-4">
-          {/* Contact Info */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-3">
-              <Mail className="w-4 h-4 text-muted-foreground" />
-              <a href={`mailto:${mockConversation.email}`} className="text-sm text-primary hover:underline">
-                {mockConversation.email}
-              </a>
-            </div>
-            <div className="flex items-center gap-3">
-              <Phone className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm text-foreground">{mockConversation.phone}</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <ExternalLink className="w-4 h-4 text-muted-foreground" />
-              <a href={`https://${mockConversation.linkedin}`} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline">
-                LinkedIn Profile
-              </a>
-            </div>
-          </div>
-
-          <div className="border-t border-border pt-4">
-            <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Company</h4>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
-                <Building2 className="w-5 h-5 text-muted-foreground" />
+          
+          <div className="space-y-4">
+            {/* Contact Info */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <Mail className="w-4 h-4 text-muted-foreground" />
+                <a href={`mailto:${mockConversation.email}`} className="text-sm text-primary hover:underline">
+                  {mockConversation.email}
+                </a>
               </div>
-              <div>
-                <p className="text-sm font-medium text-foreground">{mockConversation.company}</p>
-                <p className="text-xs text-muted-foreground">Enterprise SaaS • 500-1000 employees</p>
+              <div className="flex items-center gap-3">
+                <Phone className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm text-foreground">{mockConversation.phone}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <ExternalLink className="w-4 h-4 text-muted-foreground" />
+                <a href={`https://${mockConversation.linkedin}`} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline">
+                  LinkedIn Profile
+                </a>
               </div>
             </div>
-          </div>
 
-          <div className="border-t border-border pt-4">
-            <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Stage</h4>
-            <select className="input-field text-sm">
-              <option value="leads">Leads</option>
-              <option value="outreach">Outreach</option>
-              <option value="warm" selected>Warm</option>
-              <option value="nurture">Nurture</option>
-              <option value="opportunity">Opportunity</option>
-              <option value="customer">Customer</option>
-            </select>
-          </div>
+            <div className="border-t border-border pt-4">
+              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Company</h4>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
+                  <Building2 className="w-5 h-5 text-muted-foreground" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">{mockConversation.company}</p>
+                  <p className="text-xs text-muted-foreground">Enterprise SaaS • 500-1000 employees</p>
+                </div>
+              </div>
+            </div>
 
-          <div className="border-t border-border pt-4">
-            <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Quick Actions</h4>
-            <div className="space-y-2">
-              <button className="w-full btn-secondary justify-start text-sm">
-                Move to Opportunity
-              </button>
-              <button className="w-full btn-ghost border border-border justify-start text-sm">
-                Add to Nurture
-              </button>
-              <button className="w-full btn-ghost border border-border justify-start text-sm text-destructive hover:bg-destructive/10">
-                Disqualify Lead
-              </button>
+            <div className="border-t border-border pt-4">
+              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Stage</h4>
+              <select className="input-field text-sm" defaultValue="warm">
+                <option value="leads">Leads</option>
+                <option value="outreach">Outreach</option>
+                <option value="warm">Warm</option>
+                <option value="nurture">Nurture</option>
+                <option value="opportunity">Opportunity</option>
+                <option value="customer">Customer</option>
+              </select>
+            </div>
+
+            <div className="border-t border-border pt-4">
+              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Quick Actions</h4>
+              <div className="space-y-2">
+                <button className="w-full btn-secondary justify-start text-sm">
+                  Move to Opportunity
+                </button>
+                <button className="w-full btn-ghost border border-border justify-start text-sm">
+                  Add to Nurture
+                </button>
+                <button className="w-full btn-ghost border border-border justify-start text-sm text-destructive hover:bg-destructive/10">
+                  Disqualify Lead
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
