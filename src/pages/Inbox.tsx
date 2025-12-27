@@ -95,12 +95,12 @@ export default function Inbox() {
   });
 
   return (
-    <div className="h-[calc(100vh-2rem)] flex animate-fade-in overflow-hidden">
+    <div className="h-[calc(100vh-2rem)] flex animate-fade-in overflow-hidden relative">
       {/* Conversations List */}
       <div 
         className={cn(
-          "border-r border-border flex flex-col bg-card/30 transition-all duration-300 ease-in-out",
-          isPanelCollapsed ? "w-0 min-w-0 overflow-hidden" : "w-80 min-w-[320px]"
+          "border-r border-border flex flex-col bg-card/30 transition-all duration-300 ease-in-out relative",
+          isPanelCollapsed ? "w-0 min-w-0 overflow-hidden border-r-0" : "w-80 min-w-[320px]"
         )}
       >
         {/* Header */}
@@ -160,22 +160,25 @@ export default function Inbox() {
             </div>
           ))}
         </div>
+
+        {/* Toggle Button - positioned on the right edge of conversations panel */}
+        <button 
+          onClick={() => setIsPanelCollapsed(!isPanelCollapsed)}
+          className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-card border border-border flex items-center justify-center hover:bg-muted transition-colors shadow-lg z-10"
+        >
+          <ChevronLeft className="w-3.5 h-3.5 text-foreground" />
+        </button>
       </div>
 
-      {/* Toggle Button - positioned on the edge like sidebar */}
-      <button 
-        onClick={() => setIsPanelCollapsed(!isPanelCollapsed)}
-        className={cn(
-          "absolute top-20 w-6 h-6 rounded-full bg-card border border-border flex items-center justify-center hover:bg-muted transition-all duration-300 shadow-lg z-10",
-          isPanelCollapsed ? "left-0" : "left-[308px]"
-        )}
-      >
-        {isPanelCollapsed ? (
+      {/* Toggle Button when collapsed - positioned at the left edge */}
+      {isPanelCollapsed && (
+        <button 
+          onClick={() => setIsPanelCollapsed(false)}
+          className="absolute left-0 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-card border border-border flex items-center justify-center hover:bg-muted transition-colors shadow-lg z-10"
+        >
           <ChevronRight className="w-3.5 h-3.5 text-foreground" />
-        ) : (
-          <ChevronLeft className="w-3.5 h-3.5 text-foreground" />
-        )}
-      </button>
+        </button>
+      )}
 
       {/* Conversation Detail */}
       <div className="flex-1">
