@@ -105,7 +105,6 @@ const filters = [
 export default function Calls() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCall, setSelectedCall] = useState<Call | null>(null);
-  const [isPanelCollapsed, setIsPanelCollapsed] = useState(false);
   const [activeFilter, setActiveFilter] = useState("all");
 
   const filteredCalls = mockCalls.filter((call) => {
@@ -227,8 +226,8 @@ export default function Calls() {
         {/* Calls List Panel */}
         <div 
           className={cn(
-            "border-r border-border flex flex-col bg-card/30 transition-all duration-300 ease-in-out relative",
-            isPanelCollapsed ? "w-0 min-w-0 overflow-hidden border-r-0" : "w-96 min-w-[384px]"
+            "flex flex-col bg-card/30 transition-all duration-300 ease-in-out relative",
+            selectedCall ? "w-96 min-w-[384px] border-r border-border" : "flex-1"
           )}
         >
           {/* Filters */}
@@ -274,20 +273,25 @@ export default function Calls() {
           </div>
 
           {/* Call List */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3">
-            {filteredCalls.map((call, index) => (
-              <div
-                key={call.id}
-                className="animate-slide-in-bottom"
-                style={{ animationDelay: `${index * 30}ms` }}
-              >
-                <CallCard
-                  call={call}
-                  isSelected={selectedCall?.id === call.id}
-                  onClick={() => setSelectedCall(call)}
-                />
-              </div>
-            ))}
+          <div className="flex-1 overflow-y-auto p-4">
+            <div className={cn(
+              "gap-3",
+              selectedCall ? "flex flex-col" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+            )}>
+              {filteredCalls.map((call, index) => (
+                <div
+                  key={call.id}
+                  className="animate-slide-in-bottom"
+                  style={{ animationDelay: `${index * 30}ms` }}
+                >
+                  <CallCard
+                    call={call}
+                    isSelected={selectedCall?.id === call.id}
+                    onClick={() => setSelectedCall(call)}
+                  />
+                </div>
+              ))}
+            </div>
             {filteredCalls.length === 0 && (
               <div className="text-center py-12 text-muted-foreground">
                 <Phone className="w-12 h-12 mx-auto mb-4 opacity-50" />
@@ -295,40 +299,22 @@ export default function Calls() {
               </div>
             )}
           </div>
-
-          {/* Toggle Button */}
-          <button 
-            onClick={() => setIsPanelCollapsed(!isPanelCollapsed)}
-            className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-card border border-border flex items-center justify-center hover:bg-muted transition-colors shadow-lg z-10"
-          >
-            <ChevronLeft className="w-3.5 h-3.5 text-foreground" />
-          </button>
         </div>
 
-        {/* Toggle Button when collapsed */}
-        {isPanelCollapsed && (
-          <button 
-            onClick={() => setIsPanelCollapsed(false)}
-            className="absolute left-0 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-card border border-border flex items-center justify-center hover:bg-muted transition-colors shadow-lg z-10"
-          >
-            <ChevronRight className="w-3.5 h-3.5 text-foreground" />
-          </button>
-        )}
-
-        {/* Call Detail Panel */}
-        <div className="flex-1 bg-background/50 overflow-y-auto">
-          {selectedCall ? (
+        {/* Call Detail Panel - Only shows when a call is selected */}
+        {selectedCall && (
+          <div className="flex-1 bg-background/50 overflow-y-auto relative animate-fade-in">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-4 right-4 z-10"
+              onClick={() => setSelectedCall(null)}
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </Button>
             <CallDetail call={selectedCall} />
-          ) : (
-            <div className="h-full flex items-center justify-center text-muted-foreground">
-              <div className="text-center">
-                <Phone className="w-16 h-16 mx-auto mb-4 opacity-30" />
-                <h3 className="text-lg font-medium text-foreground mb-2">No call selected</h3>
-                <p className="text-sm">Select a call from the list to view details</p>
-              </div>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
