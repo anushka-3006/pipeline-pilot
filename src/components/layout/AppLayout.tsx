@@ -11,7 +11,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   return (
-    <div className="min-h-screen dark relative">
+    <div className="min-h-screen relative">
       {/* Background Image */}
       <div 
         className="fixed inset-0 z-0"
