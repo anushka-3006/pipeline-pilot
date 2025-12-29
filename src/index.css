@@ -173,59 +173,9 @@
 }
 
 @layer components {
-  /* Enhanced Glassmorphism - Light Mode */
+  /* Enhanced Glassmorphism */
   .glass {
-    @apply backdrop-blur-xl border border-border/50;
-    background: linear-gradient(
-      135deg,
-      hsl(var(--card) / 0.9) 0%,
-      hsl(var(--card) / 0.7) 100%
-    );
-    box-shadow: 
-      0 8px 32px 0 rgba(0, 0, 0, 0.08),
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
-  }
-
-  .glass-strong {
-    @apply backdrop-blur-2xl border border-border/60;
-    background: linear-gradient(
-      135deg,
-      hsl(var(--card)) 0%,
-      hsl(var(--card) / 0.9) 100%
-    );
-    box-shadow: 
-      0 8px 32px 0 rgba(0, 0, 0, 0.1),
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
-  }
-
-  .glass-card {
-    @apply backdrop-blur-xl border border-border/40 rounded-xl;
-    background: linear-gradient(
-      145deg,
-      hsl(var(--card)) 0%,
-      hsl(var(--card) / 0.85) 100%
-    );
-    box-shadow: 
-      0 4px 24px 0 rgba(0, 0, 0, 0.06),
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.9),
-      inset 0 0 20px 0 rgba(255, 255, 255, 0.3);
-  }
-
-  .glass-sidebar {
-    @apply backdrop-blur-2xl border-r border-border/50;
-    background: linear-gradient(
-      180deg,
-      hsl(var(--sidebar-background)) 0%,
-      hsl(var(--sidebar-background) / 0.95) 100%
-    );
-    box-shadow: 
-      4px 0 24px 0 rgba(0, 0, 0, 0.05),
-      inset 1px 0 0 0 rgba(255, 255, 255, 0.8);
-  }
-
-  /* Dark mode glass overrides */
-  .dark .glass {
-    @apply border-white/10;
+    @apply backdrop-blur-xl border border-white/10;
     background: linear-gradient(
       135deg,
       hsl(var(--card) / 0.4) 0%,
@@ -236,8 +186,8 @@
       inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
   }
 
-  .dark .glass-strong {
-    @apply border-white/15;
+  .glass-strong {
+    @apply backdrop-blur-2xl border border-white/15;
     background: linear-gradient(
       135deg,
       hsl(var(--card) / 0.6) 0%,
@@ -248,8 +198,8 @@
       inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
   }
 
-  .dark .glass-card {
-    @apply border-white/10;
+  .glass-card {
+    @apply backdrop-blur-xl border border-white/10 rounded-xl;
     background: linear-gradient(
       145deg,
       hsl(var(--card) / 0.5) 0%,
@@ -261,8 +211,8 @@
       inset 0 0 20px 0 rgba(255, 255, 255, 0.02);
   }
 
-  .dark .glass-sidebar {
-    @apply border-r-white/10;
+  .glass-sidebar {
+    @apply backdrop-blur-2xl border-r border-white/10;
     background: linear-gradient(
       180deg,
       hsl(var(--sidebar-background) / 0.85) 0%,
@@ -290,15 +240,9 @@
     @apply transition-all duration-300 hover:border-primary/30;
     &:hover {
       box-shadow: 
-        0 8px 32px 0 rgba(0, 0, 0, 0.08),
+        0 8px 32px 0 rgba(0, 0, 0, 0.3),
         0 0 20px 0 hsl(var(--primary) / 0.1);
     }
-  }
-
-  .dark .card-hover:hover {
-    box-shadow: 
-      0 8px 32px 0 rgba(0, 0, 0, 0.3),
-      0 0 20px 0 hsl(var(--primary) / 0.1);
   }
 
   .stat-card {
@@ -317,11 +261,7 @@
 
   .pipeline-column {
     @apply flex flex-col gap-3 min-w-[280px] max-w-[320px] rounded-xl p-4;
-    @apply glass border-border/30;
-  }
-
-  .dark .pipeline-column {
-    @apply border-white/5;
+    @apply glass border-white/5;
   }
 
   .lead-card {
@@ -332,12 +272,6 @@
   .lead-card:active {
     @apply scale-[1.02];
     box-shadow: 
-      0 12px 40px 0 rgba(0, 0, 0, 0.15),
-      0 0 30px 0 hsl(var(--primary) / 0.15);
-  }
-
-  .dark .lead-card:active {
-    box-shadow: 
       0 12px 40px 0 rgba(0, 0, 0, 0.4),
       0 0 30px 0 hsl(var(--primary) / 0.15);
   }
@@ -345,7 +279,7 @@
   .nav-item {
     @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium;
     @apply text-muted-foreground transition-all duration-200;
-    @apply hover:bg-foreground/5 hover:text-foreground;
+    @apply hover:bg-white/5 hover:text-foreground;
   }
 
   .nav-item.active {
@@ -363,63 +297,34 @@
   }
 
   .badge-leads {
-    @apply bg-slate-500/15 text-slate-600 border border-slate-500/25;
+    @apply bg-slate-500/20 text-slate-300 border border-slate-500/30;
   }
 
   .badge-outreach {
-    @apply bg-blue-500/15 text-blue-600 border border-blue-500/25;
+    @apply bg-blue-500/20 text-blue-300 border border-blue-500/30;
   }
 
   .badge-warm {
-    @apply bg-amber-500/15 text-amber-600 border border-amber-500/25;
+    @apply bg-amber-500/20 text-amber-300 border border-amber-500/30;
   }
 
   .badge-nurture {
-    @apply bg-purple-500/15 text-purple-600 border border-purple-500/25;
+    @apply bg-purple-500/20 text-purple-300 border border-purple-500/30;
   }
 
   .badge-opportunity {
-    @apply bg-emerald-500/15 text-emerald-600 border border-emerald-500/25;
+    @apply bg-emerald-500/20 text-emerald-300 border border-emerald-500/30;
   }
 
   .badge-customer {
-    @apply bg-primary/15 text-primary border border-primary/25;
-  }
-
-  .dark .badge-leads {
-    @apply bg-slate-500/20 text-slate-300 border-slate-500/30;
-  }
-
-  .dark .badge-outreach {
-    @apply bg-blue-500/20 text-blue-300 border-blue-500/30;
-  }
-
-  .dark .badge-warm {
-    @apply bg-amber-500/20 text-amber-300 border-amber-500/30;
-  }
-
-  .dark .badge-nurture {
-    @apply bg-purple-500/20 text-purple-300 border-purple-500/30;
-  }
-
-  .dark .badge-opportunity {
-    @apply bg-emerald-500/20 text-emerald-300 border-emerald-500/30;
-  }
-
-  .dark .badge-customer {
-    @apply bg-primary/20 text-primary border-primary/30;
+    @apply bg-primary/20 text-primary border border-primary/30;
   }
 
   .input-field {
-    @apply w-full px-4 py-2.5 rounded-lg border border-border backdrop-blur-sm;
+    @apply w-full px-4 py-2.5 rounded-lg border border-white/10 backdrop-blur-sm;
     @apply text-foreground placeholder:text-muted-foreground;
     @apply focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50;
     @apply transition-all duration-200;
-    background: hsl(var(--muted) / 0.5);
-  }
-
-  .dark .input-field {
-    @apply border-white/10;
     background: hsl(var(--muted) / 0.3);
   }
 
@@ -444,21 +349,17 @@
     @apply active:scale-[0.98];
     @apply transition-all duration-200;
     @apply focus:outline-none focus:ring-2 focus:ring-ring/50;
-    @apply glass border-border/30;
-  }
-
-  .dark .btn-secondary {
-    @apply border-white/10;
+    @apply glass border-white/10;
   }
 
   .btn-secondary:hover {
-    @apply bg-foreground/5;
+    @apply bg-white/10;
   }
 
   .btn-ghost {
     @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg;
     @apply text-foreground font-medium;
-    @apply hover:bg-foreground/5 active:scale-[0.98];
+    @apply hover:bg-white/5 active:scale-[0.98];
     @apply transition-all duration-200;
   }
 
